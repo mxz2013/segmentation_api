@@ -1,0 +1,15 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.so
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE files (e.g., PyCharm, VS Code)
+.idea/
+.vscode/
+*.swp
