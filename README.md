@@ -3,13 +3,24 @@ server_main.py is the main file to run the server.
 client_main.py is the main file to run the client.
 
 # Requirements
+- The code has been tested on Ubuntu 24.04 with Python 3.10 with CPU inference.
 - Python 3.10+(python 3.10.6 is recommended)
 - `python3.10 -m venv venv` to create a virtual environment
 - `source venv/bin/activate` to activate the virtual environment
 - `pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126`
 - `pip install -r requirements.txt` 
 Install torch and torchvision outside requirements.txt for simplify Dockerfile building.
- 
+
+If you have any trouble installing requirements.txt, you can try to install the packages one by one. The main packages are:
+- torch, torchvision from https://pytorch.org/
+- fastapi
+- uvicorn
+- requests
+- huggingface, huggingface_hub 
+- transformers
+`pip install --no-cache-dir fastapi uvicorn requests huggingface transformers`
+
+
 # Run without a api server
 `python main.py --image tests/images/cat_3.jpg`
 
