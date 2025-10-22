@@ -20,7 +20,7 @@ client_main.py is the main file to run the client.
 
 # Test concurrency
 You can test the concurrency of the API server using the provided script `produce_stats_concurrent_users.py`.
-python tests/produce_stats_concurrent_users.py
+e.g., `python tests/produce_stats_concurrent_users.py` with the server running in the background.
 
 # Docker
 You can build and run the Docker container using the provided Dockerfile.
@@ -33,6 +33,8 @@ possible arguments:
 - add -e WORKERS=NUM_WORKERS to set the number of workers for the server
 - add -e PORT=PORT_NUMBER to set the port number for the server
 - add -e HOST=HOST_ADDRESS to set the host address for the server
+
+The GPU inference is not tested yet due to the lack of GPU resource.
 
 or pull my docker image from docker hub
 `docker pull skyzhou323/segmentation-api:1.1`
