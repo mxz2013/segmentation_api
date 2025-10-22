@@ -51,4 +51,6 @@ possible arguments:
 The GPU inference is not tested yet due to the lack of GPU resource.
 
 or pull my docker image from docker hub
-`docker pull skyzhou323/segmentation-api:1.1`
+- `docker pull skyzhou323/segmentation-api:1.1`
+- `docker run -p 8088:8000 --name cpu_inference skyzhou323/segmentation-api:1.1`
+- then run the client from another terminal `python client_main.py --image tests/images/cat_3.jpg --port 8088`
