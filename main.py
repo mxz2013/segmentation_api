@@ -28,6 +28,13 @@ def main():
         help="the confidence threshold for mask",
     )
     parser.add_argument(
+        "--target_ids",
+        type=int,  # Convert each argument to an integer
+        nargs="+",  # Accept one or more values, which will be collected into a list
+        default=DEFAULT_TARGETS,
+        help="List of target IDs for segmentation (e.g., 1 2 3)",
+    )
+    parser.add_argument(
         "--device", type=str, default=None, help="Device for inference (cuda or cpu)"
     )
 
@@ -42,8 +49,8 @@ def main():
 
     logger.info(f"Processing {args.image}")
 
-    results = segmenter.segment(args.image)
-    print(f"{results = }")
+    results = segmenter.segment(args.image, target_class_ids=args.target_ids, threshold=args.threshold)
+    logger.info(f"{results = }")
 
 
 if __name__ == "__main__":

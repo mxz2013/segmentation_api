@@ -56,7 +56,7 @@ class HFSementicSegmentation(SegmentationBaseModel):
         """
         with torch.no_grad():
             inputs = self.preprocessor(images=image, return_tensors="pt")
-            # TODO check how to take into account the user defined threshold classification threshold
+            # TODO check how to take into account the user defined threshold for the mask
             # cur_threshold = threshold or self.default_threshold
             outputs = self.model(**inputs)
             predicted_mask = self.preprocessor.post_process_semantic_segmentation(

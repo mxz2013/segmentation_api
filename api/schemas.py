@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
-from config.configure import VALID_MODEL_NAMES, DEFAULT_TARGETS, DEFAULT_THRESHOLD
+from config.configure import DEFAULT_TARGETS, DEFAULT_THRESHOLD
 
 
 class PredictionRequest(BaseModel):
@@ -58,7 +58,6 @@ class ServerStatus(BaseModel):
 
     status: str = Field(..., description="Server status")
     available_models: List[str] = Field(..., description="List of available models")
-    # device: str = Field(..., description="Device being used (cpu/cuda)")
     version: str = Field(default="1.0.0", description="API version")
 
 

@@ -1,9 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 from PIL import Image
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class SegmentationBaseModel(ABC):

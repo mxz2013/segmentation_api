@@ -4,6 +4,8 @@ client_main.py is the main file to run the client.
 
 # Requirements
 - Python 3.10+
+- `python3.10 -m venv venv` to create a virtual environment
+- `source venv/bin/activate` to activate the virtual environment
 - `pip install -r requirements.txt`
 - `pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126`
  

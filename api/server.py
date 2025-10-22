@@ -37,6 +37,8 @@ class MLInferenceServer:
         self.device = device
         # model cache to avoid reloading
         self.model_cache: Dict[str, Segmenter] = {}
+        # cache lock to protect model loading, as multiple requests can come at the same time
+        # especially when using multiple workers, we need to ensure that only one thread loads the model at a time
         self.cache_lock = threading.Lock()
         self.setup_routes()
 
@@ -90,7 +92,7 @@ class MLInferenceServer:
                 predictor = self.get_predictor()
 
                 predictions = predictor.segment(
-                    request.image_path, request.target_class_ids
+                    request.image_path, request.target_class_ids, request.threshold
                 )
 
                 # convert predictions to response format
