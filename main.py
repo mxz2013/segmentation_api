@@ -1,7 +1,7 @@
 import argparse
 import logging
 import torch
-from config.configure import VALID_MODEL_NAMES
+from config.configure import VALID_MODEL_NAMES, DEFAULT_TARGETS, DEFAULT_THRESHOLD
 from inference.segmenter import Segmenter
 
 logging.basicConfig(
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Cat Segmentation Inference")
+    parser = argparse.ArgumentParser(description="Segmentation Inference")
 
     parser.add_argument("--image", type=str, required=True, help="Input image path")
     parser.add_argument(
@@ -22,7 +22,10 @@ def main():
         help="model name for segmentation",
     )
     parser.add_argument(
-        "--threshold", type=float, default=0.5, help="the confidence threshold for mask"
+        "--threshold",
+        type=float,
+        default=DEFAULT_THRESHOLD,
+        help="the confidence threshold for mask",
     )
     parser.add_argument(
         "--device", type=str, default=None, help="Device for inference (cuda or cpu)"
@@ -40,12 +43,7 @@ def main():
     logger.info(f"Processing {args.image}")
 
     results = segmenter.segment(args.image)
-
-    logger.info(f"Detected {results['cat_count']} cat(s)")
-    for i, score in enumerate(results["scores"]):
-        logger.info(
-            f"  Cat {i + 1}: confidence={score:.3f}, pixels: {results['pix_count'][i]}"
-        )
+    print(f"{results = }")
 
 
 if __name__ == "__main__":

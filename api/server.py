@@ -27,8 +27,8 @@ class MLInferenceServer:
 
     def __init__(self, model_name: str, device: str):
         self.app = FastAPI(
-            title="Cat Segmentation API",
-            description="FastAPI server for cat segmentation inference",
+            title="Segmentation API",
+            description="FastAPI server for segmentation inference",
             version="1.0.0",
             docs_url="/docs",
             redoc_url="/redoc",
@@ -89,7 +89,6 @@ class MLInferenceServer:
 
                 predictor = self.get_predictor()
 
-                # with self.inference_lock:
                 predictions = predictor.segment(
                     request.image_path, request.target_class_ids
                 )
@@ -144,9 +143,6 @@ class MLInferenceServer:
             return {"success": True, "message": f"Model {self.model_name} preloaded"}
 
 
-# global server instance
-
-
 def run_server(
     model_name: str,
     device: str,
@@ -155,7 +151,6 @@ def run_server(
     workers: int = 1,
 ):
     """
-
     :param model_name:
     :param device:
     :param host:
@@ -163,9 +158,7 @@ def run_server(
     :param workers:
     :return:
     """
-    ml_server = MLInferenceServer(
-        model_name=model_name, device=device
-    )
+    ml_server = MLInferenceServer(model_name=model_name, device=device)
     # force the model loading here to be sure it works for multiple workers
     try:
         ml_server.get_predictor()

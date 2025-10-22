@@ -29,6 +29,6 @@ class SegmentationBaseModel(ABC):
         """
         run an inference on an image
         :param image:
-        :return: a dict with inference results. keys: masks, boxes, scores, cat_count, pix_count
+        :return: a dict with target_id: pix_count
         """
         pass

@@ -49,7 +49,7 @@ def main():
     result = client.predict_single_image(
         image_path=args.image,
         target_class_ids=args.target_ids,
-        threshold=args.threshold
+        threshold=args.threshold,
     )
 
     print("=" * 50)

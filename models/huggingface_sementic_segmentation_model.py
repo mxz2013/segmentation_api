@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from typing import Dict, Optional, List
 import logging
-from config.configure import DEFAULT_TARGETS
+from config.configure import DEFAULT_TARGETS, DEFAULT_THRESHOLD
 
 from models.base_model import SegmentationBaseModel
 from transformers import AutoImageProcessor, AutoModelForSemanticSegmentation
@@ -18,7 +18,7 @@ class HFSementicSegmentation(SegmentationBaseModel):
         self,
         device: str,
         default_target_ids: List[int] = DEFAULT_TARGETS,
-        default_threshold: float = 0.5,
+        default_threshold: float = DEFAULT_THRESHOLD,
         model_name: str = "google/deeplabv3_mobilenet_v2_1.0_513",
     ):
         super().__init__(device, default_threshold)
@@ -56,7 +56,7 @@ class HFSementicSegmentation(SegmentationBaseModel):
         """
         with torch.no_grad():
             inputs = self.preprocessor(images=image, return_tensors="pt")
-            # TODO check how to take into accout the user defined threshold classification threshold
+            # TODO check how to take into account the user defined threshold classification threshold
             # cur_threshold = threshold or self.default_threshold
             outputs = self.model(**inputs)
             predicted_mask = self.preprocessor.post_process_semantic_segmentation(
@@ -78,6 +78,6 @@ class HFSementicSegmentation(SegmentationBaseModel):
         for target_id in cur_target_ids:
             is_match = mask_orig_dim == target_id
             count = np.sum(is_match)
-            pixel_counts_dict[target_id] = int(count) 
+            pixel_counts_dict[target_id] = int(count)
 
         return pixel_counts_dict

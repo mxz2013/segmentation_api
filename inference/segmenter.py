@@ -11,10 +11,12 @@ logger = logging.getLogger(__name__)
 
 class Segmenter:
     """
-    cat segmentation
+    segmentation class
     """
 
-    def __init__(self, device: str, model_name: str = "mask_rcnn"):
+    def __init__(
+        self, device: str, model_name: str = "google/deeplabv3_mobilenet_v2_1.0_513"
+    ):
 
         self.device = device
         self.model_name = model_name
@@ -37,9 +39,9 @@ class Segmenter:
         threshold: Optional[float] = None,
     ) -> Dict:
         """
-        :param image_path:
-        :param target_class_ids:
-        :param threshold:
+        :param image_path: input image path
+        :param target_class_ids: list of target class ids to segment, if None, use default, otherwise user defined
+        :param threshold: the threshold for binary classification, if None, use default, otherwise user defined
         :return:
         """
 

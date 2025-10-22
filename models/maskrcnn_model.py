@@ -1,11 +1,7 @@
-"""
-implement a simple Mask R-CNN pretrained model to inference an input image
-produce segmentation results for cats
-It can be extended to other pretrained model, e.g., YOLO, UNET
-"""
-
 import torch
+from torchvision.transforms import functional as F
 import numpy as np
+from PIL import Image
 from torchvision.models.detection import (
     maskrcnn_resnet50_fpn,
     MaskRCNN_ResNet50_FPN_Weights,
@@ -52,57 +48,48 @@ class MaskRCNNModel(SegmentationBaseModel):
 
     def predict(
         self,
-        image_tensor: torch.Tensor,
+        image: Image,
         target_class_ids: Optional[List[int]] = None,
         threshold: Optional[float] = None,
     ) -> Dict:
         """
         run inference and find the results
 
-        :param image_tensor: input image in tensor
+        :param image: input image in PIL.Image format
         :param target_class_ids: input image in tensor
         :param threshold: user input classification threshold
-        :return: Dict with keys: masks, boxes, scores, cat_count, pix_count
+        :return: Dict: target_id: pix_count
         """
+        image_tensor = F.to_tensor(image)
         with torch.no_grad():
             image_tensor = image_tensor.to(self.device)
             predictions = self.model([image_tensor])[0]
         # if
         cur_target_ids = target_class_ids or self.default_targe_ids
         cur_threshold = threshold or self.default_threshold
-        # we only want cat
-        target_index = (predictions["labels"] in cur_target_ids) & (
-            predictions["scores"] > cur_threshold
+        # get labes in the target ids and classification confidence > 0.7, hardcoded for now
+        target_index = np.isin(predictions["labels"], cur_target_ids) & (
+            predictions["scores"].cpu().numpy() > 0.7
         )
         if not target_index.any():
-            return {
-                "masks": np.array([]),
-                "boxes": np.array([]),
-                "scores": np.array([]),
-                "cat_count": 0,
-                "pix_count": 0,
-            }
+            results = {}
+            for label in cur_target_ids:
+                results[label] = 0
+            return results
+
         # mask in shape N, C, H, W
+        labels = predictions["labels"][target_index].cpu().numpy()
         masks = predictions["masks"][target_index].cpu().numpy()
-        boxes = predictions["boxes"][target_index].cpu().numpy()
-        scores = predictions["scores"][target_index].cpu().numpy()
 
         # binary the mask and count the mask pixels
-        masks = (masks > self.confidence_threshold).astype(np.uint8)
+        masks = (masks > cur_threshold).astype(np.uint8)
         # sum only H, W, squeeze the chanel dim
         pix_count = np.squeeze(np.sum(masks, axis=(2, 3)), axis=1)
+        results = {}
+        for i, label in enumerate(labels):
+            if label not in results:
+                results[label] = pix_count[i]
+            else:
+                results[label] += pix_count[i]
 
-        return {
-            "masks": masks,
-            "boxes": boxes,
-            "scores": scores,
-            "cat_count": len(scores),
-            "pix_count": pix_count,
-        }
-
-
-# class PredictionOutput(BaseModel):
-#     masks: np.ndarray
-#     boxes: np.ndarray
-#     scores: np.ndarray
-#     target_count: int
+        return results

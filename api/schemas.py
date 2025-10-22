@@ -3,7 +3,6 @@ from typing import List, Optional
 from config.configure import VALID_MODEL_NAMES, DEFAULT_TARGETS, DEFAULT_THRESHOLD
 
 
-
 class PredictionRequest(BaseModel):
     """
     request schema for single image inference
@@ -11,14 +10,19 @@ class PredictionRequest(BaseModel):
     """
 
     image_path: str = Field(..., description="Path to the image file")
-    threshold: float = Field(default=DEFAULT_THRESHOLD, description="Threshold for binary mask")
-    target_class_ids: List[int] = Field(default=DEFAULT_TARGETS, description="targe class ids")
+    threshold: float = Field(
+        default=DEFAULT_THRESHOLD, description="Threshold for binary mask"
+    )
+    target_class_ids: List[int] = Field(
+        default=DEFAULT_TARGETS, description="targe class ids"
+    )
 
     @field_validator("image_path")
     def validate_image_path(cls, v: str):
         if not v.strip():
             raise ValueError("Image path cannot be empty")
         return v.strip()
+
 
 class Prediction(BaseModel):
     """

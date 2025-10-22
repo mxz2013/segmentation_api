@@ -134,7 +134,11 @@ def run_single_user_prediction(user_id: int) -> Dict:
 
     try:
         # Call the synchronous prediction method
-        result = client.predict_single_image(image_path=IMAGE_PATH_FOR_TEST, target_class_ids=DEFAULT_TARGETS, threshold=DEFAULT_THRESHOLD)
+        result = client.predict_single_image(
+            image_path=IMAGE_PATH_FOR_TEST,
+            target_class_ids=DEFAULT_TARGETS,
+            threshold=DEFAULT_THRESHOLD,
+        )
         response_time = (time.time() - start_time) * 1000  # in ms
 
         # Basic validation (Success and no client-side error)
