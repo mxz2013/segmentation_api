@@ -4,18 +4,18 @@ client_main.py is the main file to run the client.
 
 # Requirements
 - Python 3.10+
-- run `pip install -r requirements.txt`
-- run `pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126`
+- `pip install -r requirements.txt`
+- `pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126`
  
-# run without a api server
-'python main.py --image tests/images/cat_3.jpg'
+# Run without a api server
+`python main.py --image tests/images/cat_3.jpg`
 
-# run with a api server
-# start the server
-'python server_main.py' 
+# Run with a api server
+## Start the server
+`python server_main.py` 
 
-# in another terminal, run the client
-'python client_main.py --image tests/images/cat_3.jpg' 
+## In another terminal, run the client
+`python client_main.py --image tests/images/cat_3.jpg` 
 
 
 # Test concurrency
