@@ -10,7 +10,7 @@ The code is designed to cache model loading correctly to avoid reloading the mod
 # How fastapi works with RQ and Redis 
 Suppose that we are having 3 clients sending requests simultaneously to the server for image segmentation.
 
-## 1. client -> server (request submission)
+## 1. Client -> Server (request submission)
 ```
 # 3 threads simultaneously send these requests:
 response1 = session.post("/predict", json=request1.dict())  # Thread 1
@@ -19,7 +19,7 @@ response3 = session.post("/predict", json=request3.dict())  # Thread 3`
 ```
 After sending all requests, the clients start to wait for responses.
 
-## 2. server processing (FastAPI - Asynchronous handling)
+## 2. Server processing (FastAPI - Asynchronous handling)
 ```
 # FastAPI handles these CONCURRENTLY using async
 async def predict_single_image(request: PredictionRequest):
@@ -53,9 +53,26 @@ in Redis, the jobs are queued as they arrive. RQ workers will pick them up one b
 Time T0: Request1 → Job1 created → Queue: [Job1]
 Time T0: Request2 → Job2 created → Queue: [Job1, Job2]  
 Time T0: Request3 → Job3 created → Queue: [Job1, Job2, Job3]
+
+# What's actually in Redis:
+Job1 = {
+    "id": "uuid-1", 
+    "data": {"image_path": "...", "threshold": 0.5, ...},
+    "status": "queued",
+    "created_at": "2024-01-01T10:00:00"
+}
+
+Job2 = {
+    "id": "uuid-2",
+    "data": {"image_path": "...", "threshold": 0.5, ...}, 
+    "status": "queued",
+    "created_at": "2024-01-01T10:00:01"
+}
+...
 ```
 
 ## 4. RQ Worker Processing (sequential processing, i.e., synchronous)
+The heavy lifting of model inference is done here. Each worker picks up one job at a time, performs the segmentation task (which is blocking/synchronous), and then stores the result back in Redis.
 ```
 # Worker runs in infinite loop (a piece of pseudo-code):
 while True:
@@ -65,5 +82,5 @@ while True:
     # Then gets Job2, then Job3...
 ```
 
-After processing results, the clients can poll for job status and retrieve results by a unique job id.
+After processing results, the clients can poll for job status and retrieve results by a unique job id from Redis.
 ```response = self.session.get(f"{self.base_url}/job_status/{job_id}")```
