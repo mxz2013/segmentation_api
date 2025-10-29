@@ -3,7 +3,7 @@
 import os
 import time
 import redis
-from rq import Worker, SimpleWorker
+from rq import SimpleWorker
 import logging
 from typing import Dict, Any
 import threading
@@ -30,26 +30,26 @@ def get_or_load_model(model_name: str, device: str) -> Segmenter:
     global _model_cache, _cache_lock
 
     # Create cache key that includes both model_name AND device
-    cache_key = f"{model_name}||{device}"
+    cache_key = f"{model_name}"
 
-    logger.info(f"🔍 PID {os.getpid()} checking cache for: '{cache_key}'")
+    logger.info(f"PID {os.getpid()} checking cache for: '{cache_key}'")
     logger.info(
-        f"📦 Current cache keys in PID {os.getpid()}: {list(_model_cache.keys())}"
+        f"Current cache keys in PID {os.getpid()}: {list(_model_cache.keys())}"
     )
 
     # 1. Fast path: check cache without lock
     if cache_key in _model_cache:
-        logger.info(f'✅ CACHE HIT in PID {os.getpid()}: "{cache_key}"')
+        logger.info(f'CACHE HIT in PID {os.getpid()}: "{cache_key}"')
         return _model_cache[cache_key]
     else:
-        logger.info(f'❌ CACHE MISS in PID {os.getpid()}: "{cache_key}"')
+        logger.info(f'CACHE MISS in PID {os.getpid()}: "{cache_key}"')
 
     # 2. Slow path: acquire lock to load model
     with _cache_lock:
         # Double-check after acquiring lock
         if cache_key not in _model_cache:
             logger.info(
-                f'🚀 LOADING in PID {os.getpid()}: "{model_name}" on device "{device}"'
+                f'LOADING in PID {os.getpid()}: "{model_name}" on device "{device}"'
             )
             start_time = time.time()
 
@@ -61,13 +61,13 @@ def get_or_load_model(model_name: str, device: str) -> Segmenter:
 
             load_time = time.time() - start_time
             logger.info(
-                f"✅ LOADED in PID {os.getpid()}: {cache_key} in {load_time:.2f}s"
+                f"LOADED in PID {os.getpid()}: {cache_key} in {load_time:.2f}s"
             )
             logger.info(
-                f"📦 Cache in PID {os.getpid()} now has: {list(_model_cache.keys())}"
+                f"Cache in PID {os.getpid()} now has: {list(_model_cache.keys())}"
             )
         else:
-            logger.info(f'♻️ Another thread loaded "{cache_key}" while we waited')
+            logger.info(f'Another thread loaded "{cache_key}" while we waited')
 
     return _model_cache[cache_key]
 
@@ -90,9 +90,9 @@ def perform_segmentation_task(task_data: Dict[str, Any]) -> WorkerPredictionResp
     device = task_data.get("device", "cpu")
 
     worker_pid = os.getpid()
-    logger.info(f"🔧 Worker PID {worker_pid}: Starting job for image {image_path}")
+    logger.info(f"Worker PID {worker_pid}: Starting job for image {image_path}")
     logger.info(
-        f"📦 Job details - Model: {model_name}, Device: {device}, Target classes: {target_class_ids}"
+        f"Job details - Model: {model_name}, Device: {device}, Target classes: {target_class_ids}"
     )
 
     if model_name not in VALID_MODEL_NAMES:
@@ -121,7 +121,6 @@ def perform_segmentation_task(task_data: Dict[str, Any]) -> WorkerPredictionResp
             for class_id, pix_count in predictions.items()
         ]
         processing_time = (time.time() - start_time) * 1000
-        logger.info(f"{predictions_objects = }")
 
         # Return the structured results (RQ handles storing this in Redis)
         return WorkerPredictionResponse(
@@ -156,11 +155,11 @@ class PreloadingWorker(SimpleWorker):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Preload models when worker instance is created
-        logger.info("🚀 Preloading models in worker process...")
-        logger.info(f"📍 Worker PID: {os.getpid()}")
+        logger.info("Preloading models in worker process...")
+        logger.info(f"Worker PID: {os.getpid()}")
         # Make sure this matches the device you'll be using in production
         get_or_load_model("google/deeplabv3_mobilenet_v2_1.0_513", "cpu")
-        logger.info("✅ Worker startup complete - models loaded and cached")
+        logger.info("Worker startup complete - models loaded and cached")
 
 
 if __name__ == "__main__":
@@ -173,10 +172,10 @@ if __name__ == "__main__":
     )
 
     # Work WITHOUT forking - this keeps the cache alive
-    logger.info("🎯 Starting worker WITHOUT forking (cache will persist)")
+    logger.info("Starting worker WITHOUT forking (cache will persist)")
     worker.work(with_scheduler=False, burst=False)
 
     # Work in the same process - cache persists across all jobs
-    logger.info("🎯 Starting SimpleWorker (no forking - cache will persist)")
-    logger.info(f"📍 Main worker PID: {os.getpid()}")
+    logger.info("Starting SimpleWorker (no forking - cache will persist)")
+    logger.info(f"Main worker PID: {os.getpid()}")
     worker.work(with_scheduler=False)

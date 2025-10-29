@@ -14,6 +14,12 @@ logger = logging.getLogger(__name__)
 class MLInferenceClient:
     """
     The ML client for sending request to the ML inference server
+    and polling for the result asynchronously.
+    1. Submits the job to the server (non-blocking on the server side)
+    2. Polls for the result until completion or failure.
+    3. Returns the result or error message.
+    4. Handles timeouts and errors gracefully.
+    5. Logs relevant information for debugging and monitoring.
     """
 
     def __init__(self, server_host: str = "localhost", server_port: int = 8000):
@@ -131,14 +137,14 @@ class MLInferenceClient:
             return {"error": f"Failed to submit job to server: {e}"}
 
         # 2. Poll for the result (Client is now blocking, but the Server is not)
-        result = self._poll_job_status(job_id, poll_interval, max_tries)
+        result_poll = self._poll_job_status(job_id, poll_interval, max_tries)
 
         total_request_time = (time.time() - total_start_time) * 1000
         logger.info(
             f"Total end-to-end request completed in {total_request_time:.2f} ms"
         )
 
-        return result
+        return result_poll
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ from segmentation_api.api.server import run_server
 
 def main():
     parser = argparse.ArgumentParser(description="ML Inference System")
-    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+    subparsers = parser.add_subparsers(dest="command", help="Available commands (server/client)")
 
     # Server command
     server_parser = subparsers.add_parser("server", help="Start the inference server")
@@ -35,7 +35,7 @@ def main():
 
     if args.command == "server":
         run_server(args.model, args.device, args.host, args.port, args.workers)
-    elif args.command == "predict":
+    elif args.command == "client":
         client = MLInferenceClient(args.host, args.port)
         result = client.predict_single_image(args.image, args.classes, args.threshold)
         print(result)
