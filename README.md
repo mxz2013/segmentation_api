@@ -1,6 +1,6 @@
-A semantic segmentation model using PyTorch and torchvision. The API is build with FastAPI, with RQ for task queue management.
-server_main.py is the main file to run the server.
-client_main.py is the main file to run the client.
+A semantic segmentation model using PyTorch and torchvision. The API is build with FastAPI, with RQ for task queue management. The key improvement is to handel requests asynchronously, allowing multiple clients to submit requests simultaneously without blocking. 
+The heavy lifting of model inference is handled by RQ workers, which process tasks sequentially from a Redis queue, either by CPU or GPU.
+The code is designed to cache model loading correctly to avoid reloading the model for each request in the same worker process 
 
 # Requirements
 - poetry is recommended for dependency management.
