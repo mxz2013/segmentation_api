@@ -24,6 +24,16 @@ dependencies = [
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.poetry]
+name = "segmentation-api"
+version = "0.1.0"
+description = ""
+# FIX: This tells Poetry that the source code for the package is located
+# in the 'segmentation_api' directory relative to this pyproject.toml file.
+packages = [
+    { include = "segmentation_api" }
+]
+
 [[tool.poetry.source]]
 name = "pytorch_cuda"
 url = "https://download.pytorch.org/whl/cu126"
