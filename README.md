@@ -4,8 +4,15 @@ The code is designed to cache model loading correctly to avoid reloading the mod
 
 # Requirements
 - poetry is recommended for dependency management.
+- poetry install will do all the job
 - The code has been tested on Ubuntu 24.04 with Python 3.10 with CPU inference.
 - Python 3.10.6 
+
+# How to run
+1. Start a Redis server (make sure redis-server is installed), `redis-server --port 6379`
+2. Start RQ worker(s): `python segmentation_api/api/worker.py`
+3. Start FastAPI server: `python segmentation_api/api/server.py`
+4. Send requests to the server `python segmentation_api/api/client.py`
 
 # How fastapi works with RQ and Redis 
 Suppose that we are having 3 clients sending requests simultaneously to the server for image segmentation.
