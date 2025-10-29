@@ -1,0 +1,35 @@
+[project]
+name = "segmentation-api"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "sky_zhou",email = "jqzhou_hit@hotmail.com"}
+]
+readme = "README.md"
+requires-python = "3.10.6"
+dependencies = [
+    "torch (>=2.9.0,<3.0.0)",
+    "torchvision (>=0.24.0,<0.25.0)",
+    "fastapi (>=0.120.0,<0.121.0)",
+    "uvicorn (>=0.38.0,<0.39.0)",
+    "requests (>=2.32.5,<3.0.0)",
+    "huggingface (>=0.0.1,<0.0.2)",
+    "transformers (>=4.57.1,<5.0.0)",
+    "redis (>=7.0.0,<8.0.0)",
+    "rq (>=2.6.0,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "pytorch_cuda"
+url = "https://download.pytorch.org/whl/cu126"
+priority = "explicit"
+
+
+[tool.poetry.dependencies]
+torch = {source = "pytorch_cuda"}
+torchvision = {source = "pytorch_cuda"}
