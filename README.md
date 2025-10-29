@@ -7,7 +7,9 @@ The code is designed to cache model loading correctly to avoid reloading the mod
 - The code has been tested on Ubuntu 24.04 with Python 3.10 with CPU inference.
 - Python 3.10.6 
 
-# How fastapi works with RQ and Redis (for example we have 3 users submitting requests simultaneously)
+# How fastapi works with RQ and Redis 
+Suppose that we are having 3 clients sending requests simultaneously to the server for image segmentation.
+
 ## 1. client -> server (request submission)
 ```
 # 3 threads simultaneously send these requests:
@@ -50,7 +52,7 @@ in Redis, the jobs are queued as they arrive. RQ workers will pick them up one b
 ```
 Time T0: Request1 → Job1 created → Queue: [Job1]
 Time T0: Request2 → Job2 created → Queue: [Job1, Job2]  
-Time T0: Request3 → Job3 created → Queue: [Job1, Job2, Job3]
+Time T0: Request3 → Job3 created → Queue: [Job1, Job2, Job3]
 ```
 
 ## 4. RQ Worker Processing (sequential processing, i.e., synchronous)
